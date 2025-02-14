@@ -3,10 +3,11 @@ const Event = require('../models/Event');
 const User = require('../models/User');
     
 exports.createEvent = async (req, res) => {
-    const { title, description, participants, date, time, duration, sessionNotes } = req.body;
+   const { title, description, participants, date, time, duration, sessionNotes } = req.body;
     const user = req.user._id;
 
     console.log('Creating event with user:', user);
+    console.log('Received event data:', { title, description, participants, date, time, duration, sessionNotes });
 
     try {
         const event = new Event({
@@ -16,18 +17,20 @@ exports.createEvent = async (req, res) => {
             date,
             time,
             duration,
-            sessionNotes,
+       exports.createEvent = async (req, res) => {
+         sessionNotes,
             user
         });
 
         await event.save();
-        console.log('Event created:', event);
-        res.status(201).json(event);
+        console.log('Event successfully saved to database:', event);
+        res.status(201).json({ success: true, event });
     } catch (error) {
-        console.error('Error creating event:', error);
-        res.status(500).json({ error: 'Failed to create event' });
+        console.error('Error creating event:', error.message);
+        res.status(500).json({ success: false, error: error.message || 'Failed to create event' });
     }
 };
+
 
 exports.getEvents = async (req, res) => {
     try {
