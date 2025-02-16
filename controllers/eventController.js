@@ -2,36 +2,20 @@
 const Event = require('../models/Event');
 const User = require('../models/User');
     
-exports.createEvent = async (req, res) => {
-   const { title, description, participants, date, time, duration, sessionNotes } = req.body;
-    const user = req.user._id;
-
-    console.log('Creating event with user:', user);
-    console.log('Received event data:', { title, description, participants, date, time, duration, sessionNotes });
-
-    try {
-        const event = new Event({
-            title,  
-            description,
-            participants,
-            date,
-            time,
-            duration,
-       exports.createEvent = async (req, res) => {
-         sessionNotes,
-            user
-        });
-
-        await event.save();
-        console.log('Event successfully saved to database:', event);
-        res.status(201).json({ success: true, event });
-    } catch (error) {
-        console.error('Error creating event:', error.message);
-        res.status(500).json({ success: false, error: error.message || 'Failed to create event' });
-    }
+export const createEvent = (eventData, token) => async (dispatch) => {
+  try {
+    const res = await axios.post('https://eventease-api-29dec.onrender.com/api/events/create', eventData, {
+      headers: { 'x-auth-token': token }
+    });
+    dispatch({ type: CREATE_EVENT, payload: res.data });
+  } catch (err) {
+    console.error('Error creating event:', err);
+    // You might want to dispatch an error action here or handle it appropriately
+  }
 };
 
 
+ChatGPT said:
 exports.getEvents = async (req, res) => {
     try {
         const events = await Event.find({ user: req.user._id });
